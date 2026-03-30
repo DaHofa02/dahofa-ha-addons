@@ -2,7 +2,7 @@ name: "Checkmate – Uptime Monitor"
 description: "Open-source uptime and infrastructure monitoring with a built-in MongoDB."
 version: "1.0.0"
 slug: "checkmate"
-url: "https://github.com/DaHofa02/dahofa-ha-addons"
+url: "https://github.com/dahofa02/dahofa-ha-addons"
 
 # Use amd64/aarch64 images directly from upstream
 image: "ghcr.io/bluewave-labs/checkmate-backend-mono"
@@ -61,4 +61,4 @@ tmpfs:
 #   memory: 512m
 
 # Changelog link
-changelog: "https://github.com/DaHofa02/dahofa-ha-addons/blob/main/checkmate/CHANGELOG.md"
+changelog: "https://github.com/dahofa02/dahofa-ha-addons/blob/main/checkmate/CHANGELOG.md"
