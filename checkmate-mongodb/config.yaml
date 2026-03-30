@@ -1,10 +1,10 @@
 name: "Checkmate – MongoDB"
-description: "MongoDB database for the Checkmate Uptime Monitor add-on."
-version: "1.0.0"
+description: "MongoDB 6.0 database for the Checkmate Uptime Monitor add-on."
+version: "1.0.1"
 slug: "checkmate-mongodb"
 url: "https://github.com/DaHofa02/dahofa-ha-addons/tree/main/checkmate-mongodb"
 
-image: "mongo:6.0"
+image: "ghcr.io/dahofa02/dahofa-ha-addons-checkmate-mongodb-{arch}"
 
 arch:
   - amd64

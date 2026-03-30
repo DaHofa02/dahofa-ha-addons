@@ -1,10 +1,10 @@
 name: "Checkmate – Uptime Monitor"
-description: "Open-source uptime and infrastructure monitoring. Requires the Checkmate MongoDB add-on."
-version: "1.0.10"
+description: "Open-source uptime and infrastructure monitoring. Start Checkmate MongoDB add-on first."
+version: "1.0.11"
 slug: "checkmate"
 url: "https://github.com/DaHofa02/dahofa-ha-addons/tree/main/checkmate"
 
-image: "ghcr.io/bluewave-labs/checkmate-backend-mono-multiarch:{arch}"
+image: "ghcr.io/dahofa02/dahofa-ha-addons-checkmate-{arch}"
 
 arch:
   - amd64
@@ -25,7 +25,7 @@ map:
 options:
   jwt_secret: "change_me_please"
   base_url: "http://localhost:52345"
-  mongodb_host: "localhost"
+  mongodb_host: "homeassistant"
   mongodb_port: 27017
 
 schema:
