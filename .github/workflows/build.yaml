@@ -22,7 +22,11 @@ jobs:
 
     strategy:
       matrix:
-        arch: [amd64, aarch64]
+        include:
+          - arch: amd64
+            platform: linux/amd64
+          - arch: aarch64
+            platform: linux/arm64
 
     steps:
       - name: Checkout
@@ -47,18 +51,17 @@ jobs:
           VERSION=$(grep '^version:' checkmate/config.yaml | awk '{print $2}' | tr -d '"')
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
-      # Lowercase the image name to satisfy Docker registry requirements
-      - name: Set lowercase image name
+      # Image name must match the `image:` field in config.yaml with {arch} replaced
+      - name: Set image name
         id: image
         run: |
-          IMAGE="ghcr.io/${{ github.repository_owner }}/dahofa-ha-addons/checkmate/${{ matrix.arch }}"
-          echo "name=${IMAGE,,}" >> "$GITHUB_OUTPUT"
+          echo "name=ghcr.io/dahofa02/dahofa-ha-addons-checkmate-${{ matrix.arch }}" >> "$GITHUB_OUTPUT"
 
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
           context: ./checkmate
-          platforms: linux/${{ matrix.arch == 'aarch64' && 'arm64' || 'amd64' }}
+          platforms: ${{ matrix.platform }}
           push: true
           build-args: |
             BUILD_FROM=ghcr.io/home-assistant/${{ matrix.arch }}-base:latest
