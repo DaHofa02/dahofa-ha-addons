@@ -4,8 +4,6 @@ version: "1.0.0"
 slug: "checkmate"
 url: "https://github.com/DaHofa02/dahofa-ha-addons/tree/main/checkmate"
 
-# Image built by GitHub Actions and pushed to GHCR.
-# HA appends the arch automatically: e.g. ghcr.io/dahofa02/dahofa-ha-addons-checkmate-amd64
 image: "ghcr.io/dahofa02/dahofa-ha-addons-checkmate-{arch}"
 
 arch:
@@ -40,13 +38,6 @@ ingress_stream: true
 panel_icon: "mdi:monitor-eye"
 panel_title: "Checkmate"
 
-privileged: false
-host_network: false
-hassio_api: false
-homeassistant_api: false
-
-tmpfs:
-  - /run
-  - /tmp
+tmpfs: true
 
 changelog: "https://github.com/DaHofa02/dahofa-ha-addons/blob/main/checkmate/CHANGELOG.md"
