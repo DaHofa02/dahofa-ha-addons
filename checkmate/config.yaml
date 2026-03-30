@@ -1,0 +1,64 @@
+name: "Checkmate – Uptime Monitor"
+description: "Open-source uptime and infrastructure monitoring with a built-in MongoDB."
+version: "1.0.0"
+slug: "checkmate"
+url: "https://github.com/DaHofa02/dahofa-ha-addons"
+
+# Use amd64/aarch64 images directly from upstream
+image: "ghcr.io/bluewave-labs/checkmate-backend-mono"
+
+# Architecture support (upstream images)
+arch:
+  - amd64
+  - aarch64
+
+# Startup order
+startup: application
+boot: auto
+
+# Ports
+ports:
+  52345/tcp: 52345
+ports_description:
+  52345/tcp: "Checkmate Web UI & API"
+
+# Persistent data
+map:
+  - type: share
+    read_only: false
+
+# User-configurable options
+options:
+  jwt_secret: "change_me_please"
+  mongodb_port: 27017
+  base_url: "http://localhost:52345"
+
+schema:
+  jwt_secret: str
+  mongodb_port: int
+  base_url: url
+
+# Home Assistant ingress (optional – forwards the UI into the HA sidebar)
+ingress: true
+ingress_port: 52345
+ingress_stream: true
+panel_icon: "mdi:monitor-eye"
+panel_title: "Checkmate"
+
+# Permissions
+privileged: false
+host_network: false
+hassio_api: false
+homeassistant_api: false
+
+# Tmpfs for runtime sockets
+tmpfs:
+  - /run
+  - /tmp
+
+# Resources (raise if needed)
+# resources:
+#   memory: 512m
+
+# Changelog link
+changelog: "https://github.com/DaHofa02/dahofa-ha-addons/blob/main/checkmate/CHANGELOG.md"
