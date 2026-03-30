@@ -1,0 +1,27 @@
+name: "Checkmate – MongoDB"
+description: "MongoDB database for the Checkmate Uptime Monitor add-on."
+version: "1.0.0"
+slug: "checkmate-mongodb"
+url: "https://github.com/DaHofa02/dahofa-ha-addons/tree/main/checkmate-mongodb"
+
+image: "mongo"
+
+arch:
+  - amd64
+  - aarch64
+
+startup: system
+boot: auto
+
+ports:
+  27017/tcp: 27017
+ports_description:
+  27017/tcp: "MongoDB"
+
+map:
+  - type: data
+    read_only: false
+
+tmpfs: true
+
+changelog: "https://github.com/DaHofa02/dahofa-ha-addons/blob/main/checkmate-mongodb/CHANGELOG.md"
