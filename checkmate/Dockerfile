@@ -5,21 +5,9 @@ FROM ${BUILD_FROM}
 RUN apk add --no-cache \
     bash \
     curl \
-    jq
-
-# ── MongoDB (from Checkmate's own image) ────────────────────────────────────
-COPY --from=ghcr.io/bluewave-labs/checkmate-mongo:latest \
-    /usr/bin/mongod \
-    /usr/bin/mongod
-
-COPY --from=ghcr.io/bluewave-labs/checkmate-mongo:latest \
-    /usr/bin/mongosh \
-    /usr/bin/mongosh
-
-COPY --from=ghcr.io/bluewave-labs/checkmate-mongo:latest \
-    /usr/lib/libssl.so* \
-    /usr/lib/libcrypto.so* \
-    /usr/lib/
+    jq \
+    mongodb \
+    mongodb-tools
 
 # ── Checkmate backend ────────────────────────────────────────────────────────
 COPY --from=ghcr.io/bluewave-labs/checkmate-backend-mono:latest \
@@ -33,5 +21,4 @@ RUN mkdir -p /data/mongodb
 COPY run.sh /run.sh
 RUN chmod +x /run.sh
 
-# Use ENTRYPOINT instead of CMD so our script runs as PID 1
 ENTRYPOINT ["/run.sh"]

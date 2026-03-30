@@ -6,7 +6,6 @@ CONFIG_PATH=/data/options.json
 JWT_SECRET=$(jq -r '.jwt_secret // "change_me_please"' "$CONFIG_PATH")
 MONGO_PORT=$(jq -r '.mongodb_port // 27017' "$CONFIG_PATH")
 BASE_URL=$(jq -r '.base_url // "http://localhost:52345"' "$CONFIG_PATH")
-# Strip trailing slash if present
 BASE_URL="${BASE_URL%/}"
 
 echo "[checkmate] Using base URL: ${BASE_URL}"
@@ -26,9 +25,14 @@ mongod \
     &
 MONGO_PID=$!
 
-# Wait for MongoDB to be ready
+# Wait for MongoDB to be ready (use mongo CLI if mongosh not available)
 echo "[checkmate] Waiting for MongoDB to become ready…"
-until mongosh --port "$MONGO_PORT" --eval "db.adminCommand('ping')" --quiet &>/dev/null; do
+for i in $(seq 1 30); do
+    if mongosh --port "$MONGO_PORT" --eval "db.adminCommand('ping')" --quiet &>/dev/null 2>&1; then
+        break
+    elif mongo --port "$MONGO_PORT" --eval "db.adminCommand('ping')" --quiet &>/dev/null 2>&1; then
+        break
+    fi
     sleep 1
 done
 echo "[checkmate] MongoDB is ready."
