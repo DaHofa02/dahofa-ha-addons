@@ -1,54 +1,38 @@
 ARG BUILD_FROM
+
+# ── Stage 1: get mongod for the correct arch from official image ──────────────
+FROM mongo:7.0 AS mongo-src
+
+# ── Stage 2: get Checkmate (has Node.js built in) ────────────────────────────
+FROM ghcr.io/bluewave-labs/checkmate-backend-mono:latest AS checkmate-src
+
+# ── Stage 3: final image based on HA base ────────────────────────────────────
 FROM ${BUILD_FROM}
 
-# ── system packages ──────────────────────────────────────────────────────────
-RUN apk add --no-cache \
-    bash \
-    curl \
-    jq \
-    libssl3 \
-    libcrypto3
+RUN apk add --no-cache bash curl jq
 
-# ── MongoDB binary (arch-aware) ──────────────────────────────────────────────
-# We download the correct MongoDB binary for the build architecture
-ARG TARGETARCH
-RUN set -eux; \
-    case "${TARGETARCH}" in \
-        amd64) \
-            MONGO_URL="https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-7.0.14.tgz" ;; \
-        arm64) \
-            MONGO_URL="https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-ubuntu2204-7.0.14.tgz" ;; \
-        *) echo "Unsupported arch: ${TARGETARCH}"; exit 1 ;; \
-    esac; \
-    curl -fsSL "${MONGO_URL}" -o /tmp/mongodb.tgz; \
-    tar -xzf /tmp/mongodb.tgz -C /tmp; \
-    mv /tmp/mongodb-linux-*/bin/mongod /usr/bin/mongod; \
-    rm -rf /tmp/mongodb*
+# Copy mongod + mongosh from the official mongo image (correct arch)
+COPY --from=mongo-src /usr/bin/mongod /usr/bin/mongod
+COPY --from=mongo-src /usr/bin/mongosh /usr/bin/mongosh
 
-# ── mongosh ──────────────────────────────────────────────────────────────────
-RUN set -eux; \
-    case "${TARGETARCH}" in \
-        amd64) \
-            MONGOSH_URL="https://downloads.mongodb.com/compass/mongosh-2.3.1-linux-x64.tgz" ;; \
-        arm64) \
-            MONGOSH_URL="https://downloads.mongodb.com/compass/mongosh-2.3.1-linux-arm64.tgz" ;; \
-        *) echo "Unsupported arch: ${TARGETARCH}"; exit 1 ;; \
-    esac; \
-    curl -fsSL "${MONGOSH_URL}" -o /tmp/mongosh.tgz; \
-    tar -xzf /tmp/mongosh.tgz -C /tmp; \
-    mv /tmp/mongosh-*/bin/mongosh /usr/bin/mongosh; \
-    mv /tmp/mongosh-*/bin/mongosh_crypt_v1.so /usr/lib/ 2>/dev/null || true; \
-    rm -rf /tmp/mongosh*
+# Copy all mongo shared libs
+COPY --from=mongo-src /usr/lib/*-linux-gnu/libssl.so* /usr/lib/
+COPY --from=mongo-src /usr/lib/*-linux-gnu/libcrypto.so* /usr/lib/
+COPY --from=mongo-src /usr/lib/*-linux-gnu/libcurl.so* /usr/lib/
+COPY --from=mongo-src /lib/*-linux-gnu/libc.so* /lib/
+COPY --from=mongo-src /lib/*-linux-gnu/libm.so* /lib/
+COPY --from=mongo-src /lib/*-linux-gnu/libpthread.so* /lib/
+COPY --from=mongo-src /lib/*-linux-gnu/libdl.so* /lib/
 
-# ── Checkmate backend ────────────────────────────────────────────────────────
-COPY --from=ghcr.io/bluewave-labs/checkmate-backend-mono:latest \
-    /app \
-    /app
+# Copy Node.js runtime from Checkmate image
+COPY --from=checkmate-src /usr/local/bin/node /usr/local/bin/node
+COPY --from=checkmate-src /usr/local/lib/node_modules /usr/local/lib/node_modules
 
-# ── data directory ───────────────────────────────────────────────────────────
+# Copy Checkmate app
+COPY --from=checkmate-src /app /app
+
 RUN mkdir -p /data/mongodb
 
-# ── startup script ───────────────────────────────────────────────────────────
 COPY run.sh /run.sh
 RUN chmod +x /run.sh
 
