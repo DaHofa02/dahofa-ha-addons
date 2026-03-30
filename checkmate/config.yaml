@@ -2,7 +2,7 @@ name: "Checkmate – Uptime Monitor"
 description: "Open-source uptime and infrastructure monitoring with a built-in MongoDB."
 version: "1.0.0"
 slug: "checkmate"
-url: "https://github.com/DaHofa02/dahofa-ha-addons"
+url: "https://github.com/DaHofa02/dahofa-ha-addons/tree/main/checkmate"
 
 # Image built by GitHub Actions and pushed to GHCR.
 # HA appends the arch automatically: e.g. ghcr.io/dahofa02/dahofa-ha-addons-checkmate-amd64
@@ -32,7 +32,7 @@ options:
 schema:
   jwt_secret: str
   mongodb_port: int
-  base_url: url
+  base_url: str
 
 ingress: true
 ingress_port: 52345
