@@ -33,4 +33,5 @@ RUN mkdir -p /data/mongodb
 COPY run.sh /run.sh
 RUN chmod +x /run.sh
 
-CMD ["/run.sh"]
+# Use ENTRYPOINT instead of CMD so our script runs as PID 1
+ENTRYPOINT ["/run.sh"]
