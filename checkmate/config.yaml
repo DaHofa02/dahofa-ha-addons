@@ -1,6 +1,6 @@
 name: "Checkmate – Uptime Monitor"
 description: "Open-source uptime and infrastructure monitoring with a built-in MongoDB."
-version: "1.0.4"
+version: "1.0.5"
 slug: "checkmate"
 url: "https://github.com/DaHofa02/dahofa-ha-addons/tree/main/checkmate"
 

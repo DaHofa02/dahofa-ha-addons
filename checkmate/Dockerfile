@@ -1,35 +1,17 @@
-ARG BUILD_FROM
+# Build directly on Checkmate image — Node.js is already correct arch
+FROM ghcr.io/bluewave-labs/checkmate-backend-mono:latest
 
-# ── Stage 1: get mongod for the correct arch from official image ──────────────
-FROM mongo:7.0 AS mongo-src
-
-# ── Stage 2: get Checkmate (has Node.js built in) ────────────────────────────
-FROM ghcr.io/bluewave-labs/checkmate-backend-mono:latest AS checkmate-src
-
-# ── Stage 3: final image based on HA base ────────────────────────────────────
-FROM ${BUILD_FROM}
-
-RUN apk add --no-cache bash curl jq
-
-# Copy mongod + mongosh from the official mongo image (correct arch)
-COPY --from=mongo-src /usr/bin/mongod /usr/bin/mongod
-COPY --from=mongo-src /usr/bin/mongosh /usr/bin/mongosh
-
-# Copy all mongo shared libs
-COPY --from=mongo-src /usr/lib/*-linux-gnu/libssl.so* /usr/lib/
-COPY --from=mongo-src /usr/lib/*-linux-gnu/libcrypto.so* /usr/lib/
-COPY --from=mongo-src /usr/lib/*-linux-gnu/libcurl.so* /usr/lib/
-COPY --from=mongo-src /lib/*-linux-gnu/libc.so* /lib/
-COPY --from=mongo-src /lib/*-linux-gnu/libm.so* /lib/
-COPY --from=mongo-src /lib/*-linux-gnu/libpthread.so* /lib/
-COPY --from=mongo-src /lib/*-linux-gnu/libdl.so* /lib/
-
-# Copy Node.js runtime from Checkmate image
-COPY --from=checkmate-src /usr/local/bin/node /usr/local/bin/node
-COPY --from=checkmate-src /usr/local/lib/node_modules /usr/local/lib/node_modules
-
-# Copy Checkmate app
-COPY --from=checkmate-src /app /app
+# Install MongoDB
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    gnupg \
+    jq \
+    && curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | gpg --dearmor -o /usr/share/keyrings/mongodb-server-7.0.gpg \
+    && echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/debian bookworm/mongodb-org/7.0 main" > /etc/apt/sources.list.d/mongodb-org-7.0.list \
+    && apt-get update && apt-get install -y --no-install-recommends \
+    mongodb-org-server \
+    mongodb-mongosh \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /data/mongodb
 
