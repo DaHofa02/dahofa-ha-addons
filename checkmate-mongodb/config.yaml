@@ -4,7 +4,7 @@ version: "1.0.0"
 slug: "checkmate-mongodb"
 url: "https://github.com/DaHofa02/dahofa-ha-addons/tree/main/checkmate-mongodb"
 
-image: "mongo"
+image: "mongo:6.0"
 
 arch:
   - amd64

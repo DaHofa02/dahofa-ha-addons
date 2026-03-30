@@ -4,7 +4,7 @@ version: "1.0.10"
 slug: "checkmate"
 url: "https://github.com/DaHofa02/dahofa-ha-addons/tree/main/checkmate"
 
-image: "ghcr.io/bluewave-labs/checkmate-backend-mono-multiarch"
+image: "ghcr.io/bluewave-labs/checkmate-backend-mono-multiarch:{arch}"
 
 arch:
   - amd64
